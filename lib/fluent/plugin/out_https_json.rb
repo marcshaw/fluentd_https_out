@@ -49,9 +49,9 @@ class Fluent::HttpsJsonOutput < Fluent::TimeSlicedOutput
     chunk.msgpack_each {|(tag,time,record)|
       events << {:tag => tag, :time => time, :record => record}
     }
-    events = events.to_json
     req = Net::HTTP::Post.new(@uri.path)
-    req.set_form_data({"events" => events})
+    req["content-type"] = "application/json"
+    req.body = JSON.dump({"events" => events})
     if @use_https
       res = @https.request(req)
     else
