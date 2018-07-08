@@ -20,6 +20,7 @@ class Fluent::HttpsJsonOutput < Fluent::TimeSlicedOutput
     @https = Net::HTTP.new(@uri.host,@uri.port)
     @https.use_ssl = true
     @use_https = conf['use_https'] == 'true'
+    @token = conf['token']
   end
 
   # This method is called when starting.
@@ -51,6 +52,7 @@ class Fluent::HttpsJsonOutput < Fluent::TimeSlicedOutput
     }
     req = Net::HTTP::Post.new(@uri.path)
     req["content-type"] = "application/json"
+    req['authorization'] = "Token token=#{@token}"
     req.body = JSON.dump({"events" => events})
     if @use_https
       res = @https.request(req)
